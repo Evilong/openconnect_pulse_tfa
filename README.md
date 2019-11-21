@@ -9,9 +9,9 @@ This script simplifies connecting to PulseVPN servers with Two-Factor-Authentica
 ## Usage
 1. Create the config file `~/.pulsevpn` with 3 lines:
 ```
-https://pulse.vpn.site
-username
-password
+servers=("https://pulse.vpn.site" "https://pulse2.vpn.site")
+username=YOUR-USERNAME
+password=YOUR-PASSWORD
 ```
 
 2. Run the script and insert the OTP when asked.  

@@ -12,6 +12,19 @@ if [ ! -f "$config_file" ]; then
   exit 1
 fi
 
+#source <(grep = $config_file | tr -d ' ')
+source <(grep = $config_file)
+if [ ${#servers[@]} -gt 1 ]; then
+  echo "Choose the server you want to connect:"
+  for i in ${!servers[@]}
+  do
+    echo $i " - " ${servers[$i]}
+  done
+  read selectedServer
+else
+  selectedServer=0
+fi
+
 # End of config section
 
 rawurlencode() {
@@ -32,9 +45,7 @@ rawurlencode() {
   REPLY="${encoded}"
 }
 
-pulse_url=$(sed '1q;d' "$config_file")
-username=$(sed '2q;d' "$config_file")
-password=$(sed '3q;d' "$config_file")
+pulse_url=${servers[$selectedServer]}
 
 echo "Connecting to $pulse_url..."
 echo "Hello $username, enter the OTP:"
