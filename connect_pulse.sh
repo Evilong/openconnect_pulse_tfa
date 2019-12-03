@@ -3,6 +3,16 @@
 
 config_file=~/.pulsevpn
 
+if ! [ -x "$(command -v openconnect)" ]; then
+  echo "You need to install openconnect, try installing it with your package installer (apt/yum/brew/...)"
+  exit
+fi
+
+if ! [ -x "$(command -v curl)" ]; then
+  echo "You need to install openconnect, try installing it with your package installer (apt/yum/brew/...)"
+  exit
+fi
+
 if [ "$1" == "disconnect" ]; then
   vpnpid=$(pgrep 'openconnect')
   if [ "$vpnpid" == "" ]; then
@@ -61,7 +71,12 @@ pulse_url=${servers[$selectedServer]}
 
 echo "Connecting to $pulse_url..."
 if [ ${#secrets[$selectedServer]} != "" ]; then
-  otp=$(oathtool --base32 --totp "${secrets[$selectedServer]}")
+  if ! [ -x "$(command -v oathtool)" ]; then
+    echo "You need to install oathtool, try installing it with your package installer (apt/yum/brew/...)"
+    exit
+  else
+    otp=$(oathtool --base32 --totp "${secrets[$selectedServer]}")
+  fi
 else
   echo "Hello $username, enter the OTP:"
   read otp
