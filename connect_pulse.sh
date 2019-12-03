@@ -48,8 +48,12 @@ rawurlencode() {
 pulse_url=${servers[$selectedServer]}
 
 echo "Connecting to $pulse_url..."
-echo "Hello $username, enter the OTP:"
-read otp
+if [ ${#secrets[$selectedServer]} != "" ]; then
+  otp=$(oathtool --base32 --totp "${secrets[$selectedServer]}")
+else
+  echo "Hello $username, enter the OTP:"
+  read otp
+fi
 
 firstStep=$(curl "$pulse_url"'/dana-na/auth/url_default/login.cgi' -H 'Connection: keep-alive' -H 'Pragma: no-cache' -H 'Cache-Control: no-cache' -H 'Origin: '"$pulse_url" -H 'Upgrade-Insecure-Requests: 1' -H 'Content-Type: application/x-www-form-urlencoded' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' -H 'Referer: '"$pulse_url"'/dana-na/auth/url_default/welcome.cgi' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: en-US,en;q=0.9' -H 'Cookie: lastRealm=remote-vpn; DSSIGNIN=url_default; DSSignInURL=/' --data 'tz_offset=60&username='$(rawurlencode "$username")'&password='$(rawurlencode "$password")'&realm=remote-vpn&btnSubmit=Sign+In' --compressed -o - 2>/dev/null)
 key=$(echo -e "$firstStep" | grep 'name="key"' | sed -E 's/.*value="(.*)".*/\1/')
