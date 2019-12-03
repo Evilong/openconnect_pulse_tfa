@@ -5,24 +5,24 @@ config_file=~/.pulsevpn
 
 if ! [ -x "$(command -v openconnect)" ]; then
   echo "You need to install openconnect, try installing it with your package installer (apt/yum/brew/...)"
-  exit
+  exit 1
 fi
 
 if ! [ -x "$(command -v curl)" ]; then
   echo "You need to install openconnect, try installing it with your package installer (apt/yum/brew/...)"
-  exit
+  exit 1
 fi
 
 if [ "$1" == "disconnect" ]; then
   vpnpid=$(pgrep 'openconnect')
   if [ "$vpnpid" == "" ]; then
     echo "Nothing to disconnect"
-    exit
+    exit 1
   else
     echo "Disconnecting..."
     pkill -SIGINT openconnect
     sleep 3
-    exit
+    exit 0
   fi
 fi
 
@@ -73,7 +73,7 @@ echo "Connecting to $pulse_url..."
 if [ ${#secrets[$selectedServer]} != "" ]; then
   if ! [ -x "$(command -v oathtool)" ]; then
     echo "You need to install oathtool, try installing it with your package installer (apt/yum/brew/...)"
-    exit
+    exit 1
   else
     otp=$(oathtool --base32 --totp "${secrets[$selectedServer]}")
   fi
@@ -93,3 +93,4 @@ fi
 echo "DSID=$DSID... connecting in 5 seconds (Ctrl-C to abort)"
 sleep 5
 openconnect -u "$username" -C "DSID=$DSID" --juniper "$pulse_url" -b
+exit 0
